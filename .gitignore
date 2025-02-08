@@ -1,7 +1,20 @@
-.gradle
-build/
+# 🚀 Игнорируем кэш и артефакты Gradle
+.gradle/
+**/build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-/.idea/
-**/.kotlin
+# 🛠 Игнорируем файлы IDE в каждом `hwXX/`
+**/.idea/
+**/*.iml
+**/*.ipr
+**/*.iws
+
+# ⚙️ Кеши Kotlin и временные файлы
+**/.kotlin/
+**/.cache/
+**/out/
+
+# 🔍 Игнорируем системные файлы macOS / Windows / Linux
+.DS_Store
+Thumbs.db
