@@ -17,10 +17,10 @@ class TestServiceImpl(
 
         ioService.printFormattedLine("Please answer the questions below")
 
-        questions.forEachIndexed { index, question ->
-            ioService.printFormattedLine("${index + 1}. ${question.text}")
-            question.answers.forEach { answer ->
-                ioService.printFormattedLine("- ${answer.text}")
+        questions.forEach { question ->
+            ioService.printFormattedLine(question.text)
+            question.answers.forEachIndexed { ansIndex, answer ->
+                ioService.printFormattedLine("${ansIndex + 1}) ${answer.text}")
             }
         }
     }

@@ -26,6 +26,6 @@ class TestServiceImplTest {
         testService.executeTest()
 
         verify { ioService.printFormattedLine("Please answer the questions below") }
-        verify { ioService.printFormattedLine("1. What is Kotlin?") }
+        verify { ioService.printFormattedLine("What is Kotlin?") }
     }
 }
