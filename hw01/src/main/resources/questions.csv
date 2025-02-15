@@ -1,6 +1,6 @@
 # Add questions. Need to skip this line in CsvToBean (withSkipLines)
-What’s a Java developer’s first reaction to Kotlin’s null safety?;Confused and looking for `NullPointerException`%true|Happy but still adding `?.let {}` everywhere%false|Trying to enable `null` for everything%false
-What does a Java developer miss the most in Kotlin?;Writing 100 lines of boilerplate for a simple POJO%true|Checked exceptions that no one handles anyway%false|Manually closing resources instead of `use {}`%false
-Why do Java developers struggle with Kotlin’s `when`?;Because they keep writing `switch`%true|Because it doesn’t require `break`%false|Because it doesn’t throw a `NullPointerException`%false
-What happens when a Java developer sees a Kotlin `object`?;They try to instantiate it%true|They mistake it for a `class`%false|They rewrite it using `static`%false
-Why do Java developers get jealous of Kotlin’s coroutines?;Because they finally understand `Thread.sleep()` is not the best solution%true|Because `CompletableFuture` looked cooler%false|Because they miss blocking everything with `synchronized`%false
+"What is the main difference between Kotlin and Java?";"Less boilerplate code%true|Only for Android%false|No JVM support%false"
+"How do you declare an immutable variable?";"val%true|var%false|let%false"
+"What does 'when' do?";"Replaces switch%true|Works only with numbers%false|Requires break%false"
+"How to avoid NullPointerException?";"Use null safety%true|Always write try-catch%false|Impossible to avoid%false"
+"What is 'object' in Kotlin?";"Singleton%true|Abstract class%false|Interface%false"
