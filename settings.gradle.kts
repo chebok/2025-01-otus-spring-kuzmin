@@ -1,3 +1,4 @@
 rootProject.name = "spring"
-include("hw01")
-include("hw02")
+
+includeBuild("hw01")
+includeBuild("hw02")
