@@ -1,5 +1,5 @@
 package io.goblin.hw03.service
 
 interface TestRunnerService {
-    fun run()
+    fun run(args: Array<String>)
 }
