@@ -1,0 +1,12 @@
+spring:
+  main:
+    banner-mode: off
+  shell:
+    interactive:
+      enabled: false
+
+test:
+  rightAnswersCountToPass: 1
+  locale: en_US
+  fileNameByLocaleTag:
+    en-US: questions/questions_test.csv

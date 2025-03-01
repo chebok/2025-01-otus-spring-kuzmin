@@ -1,0 +1,6 @@
+# Add questions. Need to skip this line in CsvToBean (withSkipLines)
+"What is the main difference between Kotlin and Java?";"Only for Android%false|No JVM support%false|Less boilerplate code%true"
+"How do you declare an immutable variable?";"val%true|var%false|let%false"
+"What does 'when' do?";"Replaces switch%true|Works only with numbers%false|Requires break%false"
+"How to avoid NullPointerException?";"Use null safety%true|Always write try-catch%false|Impossible to avoid%false"
+"What is 'object' in Kotlin?";"Abstract class%false|Interface%false|Singleton%true"
