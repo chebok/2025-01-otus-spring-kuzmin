@@ -1,0 +1,6 @@
+# Добавить вопросы. Необходимо пропустить эту строку в CsvToBean (withSkipLines)
+"В чем основное отличие между Kotlin и Java?";"Только для Android%false|Нет поддержки JVM%false|Меньше шаблонного кода%true"
+"Как объявить неизменяемую переменную?";"val%true|var%false|let%false"
+"Что делает оператор 'when'?";"Заменяет switch%true|Работает только с числами%false|Требует break%false"
+"Как избежать NullPointerException?";"Использовать проверку на null%true|Всегда писать try-catch%false|Невозможно избежать%false"
+"Что такое 'object' в Kotlin?";"Абстрактный класс%false|Интерфейс%false|Синглтон%true"

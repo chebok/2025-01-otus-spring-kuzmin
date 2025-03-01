@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: hw04
+    version: 1.0
+  messages:
+    basename: "i18n/messages"
+    encoding: UTF-8
+    fallback-to-system-locale: false
+  shell:
+    interactive:
+      enabled: true
+
+test:
+  rightAnswersCountToPass: 3
+  locale: en_US
+  fileNameByLocaleTag:
+    ru-RU: questions/questions_ru.csv
+    en-US: questions/questions.csv
