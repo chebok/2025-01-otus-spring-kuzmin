@@ -1,0 +1,2 @@
+# Add questions. Need to skip this line in CsvToBean (withSkipLines)
+"What is Kotlin?";"A programming language%true|A database%false|A web frameworka%false"
