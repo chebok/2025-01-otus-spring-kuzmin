@@ -37,18 +37,23 @@ class JdbcBookRepository(
         jdbc
             .query(
                 """
-                SELECT b.id, b.title, b.author_id, a.full_name
+                SELECT 
+                    b.id, 
+                    b.title, 
+                    b.author_id, 
+                    a.full_name,
+                    array_agg(g.id) as genre_ids,
+                    array_agg(g.name) as genre_names
                 FROM books as b
                 LEFT JOIN authors AS a ON b.author_id = a.id
+                LEFT JOIN books_genres AS bg ON bg.book_id = b.id
+                LEFT JOIN genres AS g ON bg.genre_id = g.id
                 WHERE b.id = :id
+                GROUP BY b.id
                 """.trimIndent(),
                 mapOf("id" to id),
-                bookRowMapper,
+                singleBookRowMapper,
             ).firstOrNull()
-            ?.let { book ->
-                val genres = getGenresByBookIds(setOf(book.id))[book.id].orEmpty().toMutableList()
-                book.copy(genres = genres)
-            }
 
     override fun save(book: Book): Book =
         if (book.id == 0L) {
@@ -149,6 +154,36 @@ class JdbcBookRepository(
         ) ?: emptyMap()
 
     companion object {
+        private val singleBookRowMapper =
+            RowMapper { rs: ResultSet, _: Int ->
+                val genreIds =
+                    (rs.getArray("genre_ids").array as Array<*>)
+                        .filterNotNull()
+                        .map { (it as Number).toLong() }
+
+                val genreNames =
+                    (rs.getArray("genre_names").array as Array<*>)
+                        .filterNotNull()
+                        .map { it as String }
+
+                val genres =
+                    genreIds
+                        .zip(genreNames)
+                        .map { (id, name) ->
+                            Genre(id = id, name = name)
+                        }.toMutableList()
+                Book(
+                    id = rs.getLong("id"),
+                    title = rs.getString("title"),
+                    author =
+                        Author(
+                            id = rs.getLong("author_id"),
+                            fullName = rs.getString("full_name"),
+                        ),
+                    genres = genres,
+                )
+            }
+
         private val bookRowMapper =
             RowMapper { rs: ResultSet, _: Int ->
                 Book(
