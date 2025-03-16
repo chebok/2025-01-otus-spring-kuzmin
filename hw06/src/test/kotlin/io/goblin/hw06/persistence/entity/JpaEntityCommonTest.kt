@@ -1,4 +1,4 @@
-package io.goblin.hw06.persistence.repository.jpa
+package io.goblin.hw06.persistence.entity
 
 import jakarta.persistence.Entity
 import jakarta.persistence.FetchType
