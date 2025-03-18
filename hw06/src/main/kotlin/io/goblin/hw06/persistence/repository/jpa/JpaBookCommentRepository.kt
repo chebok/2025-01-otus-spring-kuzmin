@@ -30,7 +30,6 @@ class JpaBookCommentRepository(
         val savedEntity =
             if (entity.id == null) {
                 entityManager.persist(entity)
-                entityManager.flush()
                 entity
             } else {
                 entityManager.merge(entity)
