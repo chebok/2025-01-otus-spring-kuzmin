@@ -1,6 +1,6 @@
 package io.goblin.hw06.converters
 
-import io.goblin.hw06.model.Book
+import io.goblin.hw06.dto.BookDto
 import org.springframework.stereotype.Component
 
 @Component
@@ -8,7 +8,7 @@ class BookConverter(
     private val authorConverter: AuthorConverter,
     private val genreConverter: GenreConverter,
 ) {
-    fun bookToString(book: Book): String {
+    fun bookToString(book: BookDto): String {
         val authorString = authorConverter.authorToString(book.author)
         val genresString =
             book.genres

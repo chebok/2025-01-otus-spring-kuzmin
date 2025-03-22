@@ -1,7 +1,7 @@
 package io.goblin.hw06.service
 
-import io.goblin.hw06.model.Author
+import io.goblin.hw06.dto.AuthorDto
 
 interface AuthorService {
-    fun findAll(): List<Author>
+    fun findAll(): List<AuthorDto>
 }

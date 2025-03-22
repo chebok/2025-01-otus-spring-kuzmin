@@ -1,24 +1,24 @@
 package io.goblin.hw06.service
 
-import io.goblin.hw06.model.Book
+import io.goblin.hw06.dto.BookDto
 
 interface BookService {
-    fun findById(id: Long): Book?
+    fun findById(id: Long): BookDto?
 
-    fun findAll(): List<Book>
+    fun findAll(): List<BookDto>
 
     fun insert(
         title: String,
         authorId: Long,
         genresIds: Set<Long>,
-    ): Book
+    ): BookDto
 
     fun update(
         id: Long,
         title: String,
         authorId: Long,
         genresIds: Set<Long>,
-    ): Book
+    ): BookDto
 
     fun deleteById(id: Long)
 }

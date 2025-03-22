@@ -1,6 +1,6 @@
 package io.goblin.hw06.persistence.repository.jpa
 
-import io.goblin.hw06.persistence.entity.GenreEntity
+import io.goblin.hw06.model.Genre
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,7 +19,7 @@ class JpaGenreRepositoryTest {
 
     @Test
     fun `should return correct genre list`() {
-        val expectedGenres = genreIds.map { em.find(GenreEntity::class.java, it) }
+        val expectedGenres = genreIds.map { em.find(Genre::class.java, it) }
         val actualGenres = genreRepository.findAll()
         actualGenres.forEachIndexed { i, genre ->
             assertThat(genre).usingRecursiveComparison().isEqualTo(expectedGenres[i])
@@ -28,7 +28,7 @@ class JpaGenreRepositoryTest {
 
     @Test
     fun `should return correct genre list by ids`() {
-        val expectedGenres = genreIds.map { em.find(GenreEntity::class.java, it) }
+        val expectedGenres = genreIds.map { em.find(Genre::class.java, it) }
         val expectedGenreIds = setOf<Long>(2, 4, 6)
         val expectedGenresByIds = expectedGenres.filter { it.id in expectedGenreIds }
         val actualGenres = genreRepository.findAllByIds(expectedGenreIds)

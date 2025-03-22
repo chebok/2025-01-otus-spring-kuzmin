@@ -1,7 +1,6 @@
 package io.goblin.hw06.persistence.repository.jpa
 
 import io.goblin.hw06.model.BookComment
-import io.goblin.hw06.persistence.entity.BookCommentEntity
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,7 +22,7 @@ class JpaBookCommentRepositoryTest {
         val bookId = 1L
         val expectedComments =
             commentIds
-                .map { em.find(BookCommentEntity::class.java, it) }
+                .map { em.find(BookComment::class.java, it) }
                 .filter { it.bookId == bookId }
         val actualComments = bookCommentRepository.findByBookId(bookId)
         actualComments.forEachIndexed { i, comment ->
@@ -34,7 +33,7 @@ class JpaBookCommentRepositoryTest {
     @Test
     fun `should return correct book comment by id`() {
         val bookCommentId = 1L
-        val expectedComment = em.find(BookCommentEntity::class.java, bookCommentId)
+        val expectedComment = em.find(BookComment::class.java, bookCommentId)
         val actualComment = bookCommentRepository.findById(bookCommentId)
         assertThat(actualComment)
             .isNotNull()
@@ -47,7 +46,7 @@ class JpaBookCommentRepositoryTest {
         val bookId = 1L
         val expectedComment =
             BookComment(
-                id = 0L,
+                id = null,
                 text = "A captivating read that keeps you hooked from start to finish!",
                 bookId = bookId,
             )
@@ -59,7 +58,7 @@ class JpaBookCommentRepositoryTest {
             .ignoringFields("id")
             .isEqualTo(expectedComment)
 
-        assertThat(em.find(BookCommentEntity::class.java, returnedComment.id!!))
+        assertThat(em.find(BookComment::class.java, returnedComment.id!!))
             .isNotNull()
             .usingRecursiveComparison()
             .isEqualTo(returnedComment)
@@ -75,7 +74,7 @@ class JpaBookCommentRepositoryTest {
                 text = "A captivating read that keeps you hooked from start to finish!",
                 bookId = bookId,
             )
-        val returnedCommentBeforeUpdate = em.find(BookCommentEntity::class.java, bookCommentId)
+        val returnedCommentBeforeUpdate = em.find(BookComment::class.java, bookCommentId)
 
         assertThat(returnedCommentBeforeUpdate.text).isNotEqualTo(commentWithChanges.text)
 
@@ -88,7 +87,7 @@ class JpaBookCommentRepositoryTest {
             .ignoringExpectedNullFields()
             .isEqualTo(commentWithChanges)
 
-        assertThat(em.find(BookCommentEntity::class.java, bookCommentId))
+        assertThat(em.find(BookComment::class.java, bookCommentId))
             .isNotNull()
             .usingRecursiveComparison()
             .isEqualTo(returnedCommentAfterUpdate)
@@ -97,11 +96,11 @@ class JpaBookCommentRepositoryTest {
     @Test
     fun `should delete book comment`() {
         val bookCommentId = 1L
-        val returnedCommentBeforeUpdate = em.find(BookCommentEntity::class.java, bookCommentId)
+        val returnedCommentBeforeUpdate = em.find(BookComment::class.java, bookCommentId)
         assertThat(returnedCommentBeforeUpdate).isNotNull()
         em.detach(returnedCommentBeforeUpdate)
         bookCommentRepository.deleteById(bookCommentId)
-        val returnedCommentAfterUpdate = em.find(BookCommentEntity::class.java, bookCommentId)
+        val returnedCommentAfterUpdate = em.find(BookComment::class.java, bookCommentId)
         assertThat(returnedCommentAfterUpdate).isNull()
     }
 

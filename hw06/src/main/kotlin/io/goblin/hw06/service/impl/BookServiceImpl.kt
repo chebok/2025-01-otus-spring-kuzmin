@@ -1,6 +1,8 @@
 package io.goblin.hw06.service.impl
 
+import io.goblin.hw06.dto.BookDto
 import io.goblin.hw06.exceptions.EntityNotFoundException
+import io.goblin.hw06.mapper.toDto
 import io.goblin.hw06.model.Book
 import io.goblin.hw06.persistence.repository.AuthorRepository
 import io.goblin.hw06.persistence.repository.BookRepository
@@ -16,17 +18,17 @@ class BookServiceImpl(
     private val bookRepository: BookRepository,
 ) : BookService {
     @Transactional(readOnly = true)
-    override fun findById(id: Long): Book? = bookRepository.findById(id)
+    override fun findById(id: Long): BookDto? = bookRepository.findById(id)?.toDto()
 
     @Transactional(readOnly = true)
-    override fun findAll(): List<Book> = bookRepository.findAll()
+    override fun findAll(): List<BookDto> = bookRepository.findAll().map { it.toDto() }
 
     @Transactional
     override fun insert(
         title: String,
         authorId: Long,
         genresIds: Set<Long>,
-    ): Book = save(0, title, authorId, genresIds)
+    ): BookDto = save(id = null, title, authorId, genresIds).toDto()
 
     @Transactional
     override fun update(
@@ -34,7 +36,7 @@ class BookServiceImpl(
         title: String,
         authorId: Long,
         genresIds: Set<Long>,
-    ): Book = save(id, title, authorId, genresIds)
+    ): BookDto = save(id, title, authorId, genresIds).toDto()
 
     @Transactional
     override fun deleteById(id: Long) {
@@ -42,7 +44,7 @@ class BookServiceImpl(
     }
 
     private fun save(
-        id: Long,
+        id: Long?,
         title: String,
         authorId: Long,
         genresIds: Set<Long>,

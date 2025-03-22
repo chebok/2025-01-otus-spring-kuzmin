@@ -1,9 +1,9 @@
 package io.goblin.hw06.converters
 
-import io.goblin.hw06.model.Genre
+import io.goblin.hw06.dto.GenreDto
 import org.springframework.stereotype.Component
 
 @Component
 class GenreConverter {
-    fun genreToString(genre: Genre): String = "Id: ${genre.id}, Name: ${genre.name}"
+    fun genreToString(genre: GenreDto): String = "Id: ${genre.id}, Name: ${genre.name}"
 }

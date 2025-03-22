@@ -1,6 +1,6 @@
 package io.goblin.hw06.persistence.repository.jpa
 
-import io.goblin.hw06.persistence.entity.AuthorEntity
+import io.goblin.hw06.model.Author
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -21,7 +21,7 @@ class JpaAuthorRepositoryTest {
 
     @Test
     fun `should return correct author list`() {
-        val expectedAuthors = authorIds.map { em.find(AuthorEntity::class.java, it) }
+        val expectedAuthors = authorIds.map { em.find(Author::class.java, it) }
         val actualAuthors = authorRepository.findAll()
         actualAuthors.forEachIndexed { i, author ->
             assertThat(author).usingRecursiveComparison().isEqualTo(expectedAuthors[i])
@@ -31,7 +31,7 @@ class JpaAuthorRepositoryTest {
     @ParameterizedTest(name = "should return correct author by id {0}")
     @ValueSource(longs = [1L, 2L, 3L])
     fun `should return correct author by id`(expectedAuthorId: Long) {
-        val expectedAuthor = em.find(AuthorEntity::class.java, expectedAuthorId)
+        val expectedAuthor = em.find(Author::class.java, expectedAuthorId)
         val actualAuthor = authorRepository.findById(expectedAuthorId)
         assertThat(actualAuthor)
             .isNotNull()
