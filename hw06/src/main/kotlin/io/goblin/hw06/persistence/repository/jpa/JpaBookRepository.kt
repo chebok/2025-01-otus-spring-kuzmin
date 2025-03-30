@@ -11,14 +11,14 @@ class JpaBookRepository(
     private val entityManager: EntityManager,
 ) : BookRepository {
     override fun findAll(): List<Book> {
-        val entityGraph = entityManager.getEntityGraph("book-author-genres-entity-graph")
+        val entityGraph = entityManager.getEntityGraph("book-author-entity-graph")
         val query = entityManager.createQuery("select b from Book b", Book::class.java)
         query.setHint(EntityGraphType.FETCH.key, entityGraph)
         return query.resultList
     }
 
     override fun findById(id: Long): Book? {
-        val entityGraph = entityManager.getEntityGraph("book-author-entity-graph")
+        val entityGraph = entityManager.getEntityGraph("book-author-genres-entity-graph")
         val properties = mapOf<String, Any>(EntityGraphType.FETCH.key to entityGraph)
         return entityManager.find(Book::class.java, id, properties)
     }
