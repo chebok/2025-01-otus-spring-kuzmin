@@ -5,4 +5,5 @@ rootProject.name = "spring"
 // includeBuild("hw03")
 // includeBuild("hw04")
 // includeBuild("hw05")
-includeBuild("hw06")
+// includeBuild("hw06")
+includeBuild("hw07")
