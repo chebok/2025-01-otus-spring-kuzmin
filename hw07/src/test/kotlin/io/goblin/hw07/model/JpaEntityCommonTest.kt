@@ -52,7 +52,7 @@ class JpaEntityCommonTest {
         @JvmStatic
         @BeforeAll
         fun setUpAll() {
-            val reflections = Reflections("io.goblin.hw06.model")
+            val reflections = Reflections("io.goblin.hw07.model")
             entitiesClasses = reflections.getTypesAnnotatedWith(Entity::class.java)
         }
 
