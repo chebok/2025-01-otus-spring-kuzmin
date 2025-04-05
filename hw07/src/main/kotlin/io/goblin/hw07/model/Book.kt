@@ -24,10 +24,10 @@ class Book(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
     @Column(name = "title", nullable = false)
-    val title: String,
+    var title: String,
     @ManyToOne(targetEntity = Author::class, fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
-    val author: Author,
+    var author: Author,
     @Fetch(FetchMode.SUBSELECT)
     @ManyToMany(targetEntity = Genre::class, fetch = FetchType.LAZY, cascade = [CascadeType.MERGE])
     @JoinTable(
@@ -35,5 +35,5 @@ class Book(
         joinColumns = [JoinColumn(name = "book_id", referencedColumnName = "id")],
         inverseJoinColumns = [JoinColumn(name = "genre_id", referencedColumnName = "id")],
     )
-    val genres: List<Genre> = emptyList(),
+    var genres: List<Genre> = emptyList(),
 )

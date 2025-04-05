@@ -9,7 +9,7 @@ class BookComment(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
     @Column(name = "text", nullable = false)
-    val text: String,
+    var text: String,
     @Column(name = "book_id", nullable = false)
     val bookId: Long,
 )

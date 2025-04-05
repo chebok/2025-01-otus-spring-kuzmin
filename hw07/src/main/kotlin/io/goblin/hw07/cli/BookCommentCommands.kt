@@ -45,9 +45,8 @@ class BookCommentCommands(
     fun updateBookComment(
         @ShellOption("--id", "-i") id: Long,
         @ShellOption("--text", "-t") text: String,
-        @ShellOption("--book-id", "-b") bookId: Long,
     ): String {
-        val comment = bookCommentService.update(id, text, bookId)
+        val comment = bookCommentService.update(id, text)
         return bookCommentConverter.commentToString(comment)
     }
 

@@ -31,27 +31,26 @@ class BookCommentServiceImpl(
     override fun insert(
         text: String,
         bookId: Long,
-    ): BookCommentDto = save(id = null, text, bookId).toDto()
+    ): BookCommentDto {
+        val book = bookRepository.findById(bookId).orElseThrow { EntityNotFoundException("Book with id $bookId not found") }
+        val bookComment = BookComment(text = text, bookId = book.id!!)
+        return bookCommentRepository.save(bookComment).toDto()
+    }
 
     @Transactional
     override fun update(
         id: Long,
         text: String,
-        bookId: Long,
-    ): BookCommentDto = save(id, text, bookId).toDto()
+    ): BookCommentDto {
+        val bookComment = bookCommentRepository.findById(id).orElseThrow { EntityNotFoundException("Comment with id $id not found") }
+        bookComment.apply {
+            this.text = text
+        }
+        return bookCommentRepository.save(bookComment).toDto()
+    }
 
     @Transactional
     override fun deleteById(id: Long) {
         bookCommentRepository.deleteById(id)
-    }
-
-    private fun save(
-        id: Long?,
-        text: String,
-        bookId: Long,
-    ): BookComment {
-        val book = bookRepository.findById(bookId).orElseThrow { EntityNotFoundException("Book with id $bookId not found") }
-        val bookComment = BookComment(id, text, book.id!!)
-        return bookCommentRepository.save(bookComment)
     }
 }

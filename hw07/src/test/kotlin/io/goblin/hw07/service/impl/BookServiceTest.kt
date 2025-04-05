@@ -1,7 +1,7 @@
 package io.goblin.hw07.service.impl
 
 import io.goblin.hw07.mapper.toDto
-import io.goblin.hw07.model.Book
+import io.goblin.hw07.persistence.repository.BookRepository
 import io.goblin.hw07.service.BookService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -9,34 +9,43 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.context.annotation.Import
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrNull
 
 @DataJpaTest
+@ActiveProfiles("test")
 @Import(BookServiceImpl::class)
+@Sql(scripts = ["/data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class BookServiceTest {
     @Autowired
     private lateinit var service: BookService
 
     @Autowired
-    private lateinit var em: TestEntityManager
+    private lateinit var repository: BookRepository
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     fun `should return correct book list`() {
-        val expected = bookIds.map { em.find(Book::class.java, it) }.map { it.toDto() }
+        val expected = bookIds.mapNotNull { repository.findById(it).getOrNull() }.map { it.toDto() }
         val actual = service.findAll()
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected)
     }
 
     @ParameterizedTest(name = "should return book by id = {0}")
     @ValueSource(longs = [1L, 2L, 3L])
+    @Transactional(propagation = Propagation.NEVER)
     fun `should return book by id`(bookId: Long) {
-        val expected = em.find(Book::class.java, bookId).toDto()
+        val expected = repository.findById(bookId).getOrNull()?.toDto()
         val actual = service.findById(bookId)
         assertThat(actual).usingRecursiveComparison().isEqualTo(expected)
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     fun `should save new book`() {
         val authorId = 1L
         val genresIds = setOf(2L, 3L)
@@ -46,13 +55,14 @@ class BookServiceTest {
 
         assertThat(result.id).isNotNull()
 
-        val persisted = em.find(Book::class.java, result.id)
-        assertThat(persisted.title).isEqualTo(title)
-        assertThat(persisted.author.id).isEqualTo(authorId)
-        assertThat(persisted.genres.map { it.id }.toSet()).isEqualTo(genresIds)
+        val persisted = repository.findById(result.id).getOrNull()?.toDto()
+        assertThat(persisted?.title).isEqualTo(title)
+        assertThat(persisted?.author?.id).isEqualTo(authorId)
+        assertThat(persisted?.genres?.map { it.id }?.toSet()).isEqualTo(genresIds)
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     fun `should update existing book`() {
         val bookId = 1L
         val newTitle = "Updated Title"
@@ -64,19 +74,20 @@ class BookServiceTest {
         assertThat(result.id).isEqualTo(bookId)
         assertThat(result.title).isEqualTo(newTitle)
 
-        val persisted = em.find(Book::class.java, bookId)
-        assertThat(persisted.title).isEqualTo(newTitle)
-        assertThat(persisted.genres.map { it.id }.toSet()).isEqualTo(genresIds)
+        val persisted = repository.findById(bookId).getOrNull()?.toDto()
+        assertThat(persisted?.title).isEqualTo(newTitle)
+        assertThat(persisted?.genres?.map { it.id }?.toSet()).isEqualTo(genresIds)
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     fun `should delete book`() {
         val bookId = 1L
-        assertThat(em.find(Book::class.java, bookId)).isNotNull()
+        assertThat(repository.findById(bookId).getOrNull()).isNotNull()
 
         service.deleteById(bookId)
 
-        assertThat(em.find(Book::class.java, bookId)).isNull()
+        assertThat(repository.findById(bookId).getOrNull()).isNull()
     }
 
     companion object {

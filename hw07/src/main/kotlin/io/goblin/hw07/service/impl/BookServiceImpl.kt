@@ -29,27 +29,7 @@ class BookServiceImpl(
         title: String,
         authorId: Long,
         genresIds: Set<Long>,
-    ): BookDto = save(id = null, title, authorId, genresIds).toDto()
-
-    @Transactional
-    override fun update(
-        id: Long,
-        title: String,
-        authorId: Long,
-        genresIds: Set<Long>,
-    ): BookDto = save(id, title, authorId, genresIds).toDto()
-
-    @Transactional
-    override fun deleteById(id: Long) {
-        bookRepository.deleteById(id)
-    }
-
-    private fun save(
-        id: Long?,
-        title: String,
-        authorId: Long,
-        genresIds: Set<Long>,
-    ): Book {
+    ): BookDto {
         if (genresIds.isEmpty()) {
             throw IllegalArgumentException("Genres ids must not be empty")
         }
@@ -59,7 +39,37 @@ class BookServiceImpl(
         if (genres.isEmpty() || genresIds.size != genres.size) {
             throw EntityNotFoundException("One or all genres with ids $genresIds not found")
         }
-        val book = Book(id, title, author, genres)
-        return bookRepository.save(book)
+        val book = Book(title = title, author = author, genres = genres)
+        return bookRepository.save(book).toDto()
+    }
+
+    @Transactional
+    override fun update(
+        id: Long,
+        title: String,
+        authorId: Long,
+        genresIds: Set<Long>,
+    ): BookDto {
+        val book = bookRepository.findById(id).orElseThrow { EntityNotFoundException("Book with id $id not found") }
+        if (genresIds.isEmpty()) {
+            throw IllegalArgumentException("Genres ids must not be empty")
+        }
+        val author =
+            authorRepository.findById(authorId).orElseThrow { EntityNotFoundException("Author with id $authorId not found") }
+        val genres = genreRepository.findAllByIds(genresIds)
+        if (genres.isEmpty() || genresIds.size != genres.size) {
+            throw EntityNotFoundException("One or all genres with ids $genresIds not found")
+        }
+        book.apply {
+            this.title = title
+            this.author = author
+            this.genres = genres
+        }
+        return bookRepository.save(book).toDto()
+    }
+
+    @Transactional
+    override fun deleteById(id: Long) {
+        bookRepository.deleteById(id)
     }
 }

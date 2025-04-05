@@ -15,7 +15,6 @@ interface BookCommentService {
     fun update(
         id: Long,
         text: String,
-        bookId: Long,
     ): BookCommentDto
 
     fun deleteById(id: Long)

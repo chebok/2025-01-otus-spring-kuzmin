@@ -1,28 +1,36 @@
 package io.goblin.hw07.service.impl
 
 import io.goblin.hw07.mapper.toDto
-import io.goblin.hw07.model.BookComment
+import io.goblin.hw07.persistence.repository.BookCommentRepository
 import io.goblin.hw07.service.BookCommentService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 import org.springframework.context.annotation.Import
+import org.springframework.data.repository.findByIdOrNull
+import org.springframework.test.context.ActiveProfiles
+import org.springframework.test.context.jdbc.Sql
+import org.springframework.transaction.annotation.Propagation
+import org.springframework.transaction.annotation.Transactional
+import kotlin.jvm.optionals.getOrNull
 
 @DataJpaTest
+@ActiveProfiles("test")
 @Import(BookCommentServiceImpl::class)
+@Sql(scripts = ["/data.sql"], executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class BookCommentServiceTest {
     @Autowired
     private lateinit var service: BookCommentService
 
     @Autowired
-    private lateinit var em: TestEntityManager
+    private lateinit var repository: BookCommentRepository
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     fun `should return correct book comment by id`() {
         val commentId = 1L
-        val expected = em.find(BookComment::class.java, commentId).toDto()
+        val expected = repository.findById(commentId).getOrNull()?.toDto()
 
         val actual = service.findById(commentId)
 
@@ -33,11 +41,12 @@ class BookCommentServiceTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     fun `should return correct book comments by book id`() {
         val bookId = 1L
         val expected =
             commentIds
-                .map { em.find(BookComment::class.java, it) }
+                .mapNotNull { repository.findByIdOrNull(it) }
                 .filter { it.bookId == bookId }
                 .map { it.toDto() }
 
@@ -49,6 +58,7 @@ class BookCommentServiceTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     fun `should save new book comment`() {
         val bookId = 1L
         val text = "This book blew my mind!"
@@ -57,32 +67,33 @@ class BookCommentServiceTest {
 
         assertThat(result.id).isNotNull()
 
-        val persisted = em.find(BookComment::class.java, result.id)
-        assertThat(persisted.text).isEqualTo(text)
-        assertThat(persisted.bookId).isEqualTo(bookId)
+        val persisted = repository.findById(result.id).getOrNull()?.toDto()
+        assertThat(persisted?.text).isEqualTo(text)
+        assertThat(persisted?.bookId).isEqualTo(bookId)
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     fun `should save updated book comment`() {
         val existingId = 1L
         val updatedText = "A captivating read that keeps you hooked from start to finish!"
-        val bookId = 1L
 
-        val result = service.update(existingId, updatedText, bookId)
+        val result = service.update(existingId, updatedText)
 
-        val updated = em.find(BookComment::class.java, existingId)
-        assertThat(updated.text).isEqualTo(updatedText)
+        val updated = repository.findById(existingId).getOrNull()?.toDto()
+        assertThat(updated?.text).isEqualTo(updatedText)
         assertThat(result.text).isEqualTo(updatedText)
     }
 
     @Test
+    @Transactional(propagation = Propagation.NEVER)
     fun `should delete comment`() {
         val commentId = 1L
-        assertThat(em.find(BookComment::class.java, commentId)).isNotNull()
+        assertThat(repository.findById(commentId).getOrNull()).isNotNull()
 
         service.deleteById(commentId)
 
-        assertThat(em.find(BookComment::class.java, commentId)).isNull()
+        assertThat(repository.findById(commentId).getOrNull()).isNull()
     }
 
     companion object {
