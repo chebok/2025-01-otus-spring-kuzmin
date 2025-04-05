@@ -1,0 +1,13 @@
+spring:
+  main:
+    banner-mode: off
+  shell:
+    interactive:
+      enabled: false
+    command:
+      version:
+        enabled: false
+  data:
+    mongodb:
+      port: 0
+      database: test
