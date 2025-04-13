@@ -1,17 +1,14 @@
 package io.goblin.hw08.service.impl
 
 import io.goblin.hw08.dto.BookDto
-import io.goblin.hw08.events.BookDeletedEvent
 import io.goblin.hw08.exceptions.EntityNotFoundException
 import io.goblin.hw08.mapper.toDto
 import io.goblin.hw08.model.Book
 import io.goblin.hw08.model.toEmbedded
 import io.goblin.hw08.persistence.repository.AuthorRepository
-import io.goblin.hw08.persistence.repository.BookCommentRepository
 import io.goblin.hw08.persistence.repository.BookRepository
 import io.goblin.hw08.persistence.repository.GenreRepository
 import io.goblin.hw08.service.BookService
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
@@ -20,8 +17,6 @@ class BookServiceImpl(
     private val authorRepository: AuthorRepository,
     private val genreRepository: GenreRepository,
     private val bookRepository: BookRepository,
-    private val bookCommentRepository: BookCommentRepository,
-    private val eventPublisher: ApplicationEventPublisher,
 ) : BookService {
     override fun findById(id: String): BookDto? = bookRepository.findByIdOrNull(id)?.toDto()
 
@@ -70,7 +65,6 @@ class BookServiceImpl(
     }
 
     override fun deleteById(id: String) {
-        eventPublisher.publishEvent(BookDeletedEvent(id))
         bookRepository.deleteById(id)
     }
 }

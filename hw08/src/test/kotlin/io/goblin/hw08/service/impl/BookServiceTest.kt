@@ -1,8 +1,10 @@
 package io.goblin.hw08.service.impl
 
+import io.goblin.hw08.listeners.BookMongoEventListener
 import io.goblin.hw08.mapper.toDto
 import io.goblin.hw08.model.Author
 import io.goblin.hw08.model.Book
+import io.goblin.hw08.model.BookComment
 import io.goblin.hw08.model.Genre
 import io.goblin.hw08.service.BookService
 import org.assertj.core.api.Assertions.assertThat
@@ -12,10 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest
 import org.springframework.context.annotation.Import
 import org.springframework.data.mongodb.core.MongoTemplate
+import org.springframework.data.mongodb.core.query.Criteria
+import org.springframework.data.mongodb.core.query.Query
 import org.springframework.test.context.ActiveProfiles
 
 @DataMongoTest
-@Import(BookServiceImpl::class)
+@Import(BookServiceImpl::class, BookMongoEventListener::class)
 @ActiveProfiles("test")
 class BookServiceTest {
     @Autowired
@@ -95,9 +99,22 @@ class BookServiceTest {
     fun `should delete book`() {
         val bookId = requireNotNull(testBooks.first().id)
         assertThat(mongoTemplate.findById(bookId, Book::class.java)).isNotNull()
+        val commentsBefore =
+            mongoTemplate.find(
+                Query.query(Criteria.where("bookId").`is`(bookId)),
+                BookComment::class.java,
+            )
+        assertThat(commentsBefore).isNotEmpty()
 
         service.deleteById(bookId)
 
         assertThat(mongoTemplate.findById(bookId, Book::class.java)).isNull()
+        val commentsAfter =
+            mongoTemplate.find(
+                Query.query(Criteria.where("bookId").`is`(bookId)),
+                BookComment::class.java,
+            )
+        println(commentsAfter)
+        assertThat(commentsAfter).isEmpty()
     }
 }

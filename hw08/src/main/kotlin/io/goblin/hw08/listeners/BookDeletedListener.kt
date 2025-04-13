@@ -1,16 +1,22 @@
 package io.goblin.hw08.listeners
 
-import io.goblin.hw08.events.BookDeletedEvent
+import io.goblin.hw08.model.Book
 import io.goblin.hw08.persistence.repository.BookCommentRepository
-import org.springframework.context.event.EventListener
+import org.springframework.data.mongodb.core.mapping.event.AbstractMongoEventListener
+import org.springframework.data.mongodb.core.mapping.event.AfterDeleteEvent
 import org.springframework.stereotype.Component
 
 @Component
-class BookDeletedListener(
+class BookMongoEventListener(
     private val commentRepository: BookCommentRepository,
-) {
-    @EventListener
-    fun handleBookDeleted(event: BookDeletedEvent) {
-        commentRepository.deleteByBookId(event.bookId)
+) : AbstractMongoEventListener<Book>() {
+    override fun onAfterDelete(event: AfterDeleteEvent<Book>) {
+        val source = event.source
+        val bookId = source["_id"]?.toString()
+
+        if (bookId != null) {
+            println(">>> [EVENT] Deleting comments for book $bookId")
+            commentRepository.deleteByBookId(bookId)
+        }
     }
 }
