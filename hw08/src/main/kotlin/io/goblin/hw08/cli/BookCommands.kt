@@ -39,7 +39,7 @@ class BookCommands(
         @ShellOption("--author-id", "-a") authorId: String,
         @ShellOption("--genres-ids", "-g") genresIds: Set<String>,
     ): String {
-        val savedBook = bookService.insert(title, authorId, genresIds)
+        val savedBook = bookService.create(title, authorId, genresIds)
         return bookConverter.bookToString(savedBook)
     }
 

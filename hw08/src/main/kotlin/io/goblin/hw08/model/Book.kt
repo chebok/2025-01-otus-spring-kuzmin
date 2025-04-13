@@ -9,7 +9,7 @@ class Book(
     @Id
     var id: String? = null,
     var title: String,
-    @DBRef(lazy = false)
+    @DBRef
     var author: Author,
     var genres: List<Genre> = emptyList(),
 ) {

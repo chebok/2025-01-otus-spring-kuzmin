@@ -24,7 +24,7 @@ class BookCommentServiceImpl(
         return bookCommentRepository.findByBookId(bookId).map { it.toDto() }
     }
 
-    override fun insert(
+    override fun create(
         text: String,
         bookId: String,
     ): BookCommentDto {

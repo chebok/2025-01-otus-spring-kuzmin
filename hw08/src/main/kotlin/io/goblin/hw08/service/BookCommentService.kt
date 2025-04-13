@@ -7,7 +7,7 @@ interface BookCommentService {
 
     fun findByBookId(bookId: String): List<BookCommentDto>
 
-    fun insert(
+    fun create(
         text: String,
         bookId: String,
     ): BookCommentDto

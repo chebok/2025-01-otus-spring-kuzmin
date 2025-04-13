@@ -7,7 +7,7 @@ interface BookService {
 
     fun findAll(): List<BookDto>
 
-    fun insert(
+    fun create(
         title: String,
         authorId: String,
         genresIds: Set<String>,

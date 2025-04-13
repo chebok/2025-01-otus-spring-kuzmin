@@ -37,7 +37,7 @@ class BookCommentCommands(
         @ShellOption("--text", "-t") text: String,
         @ShellOption("--book-id", "-b") bookId: String,
     ): String {
-        val comment = bookCommentService.insert(text, bookId)
+        val comment = bookCommentService.create(text, bookId)
         return bookCommentConverter.commentToString(comment)
     }
 
