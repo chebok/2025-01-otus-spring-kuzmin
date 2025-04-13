@@ -59,7 +59,7 @@ class BookServiceTest {
         val genres = mongoTemplate.findAll(Genre::class.java).take(2)
 
         val result =
-            service.insert(
+            service.create(
                 title = "New Epic Book",
                 authorId = requireNotNull(author.id),
                 genresIds = genres.mapNotNull { it.id }.toSet(),

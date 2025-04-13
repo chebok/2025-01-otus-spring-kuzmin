@@ -72,7 +72,7 @@ class BookCommentServiceTest {
     fun `should save new book comment`() {
         val text = "Absolutely phenomenal book!"
 
-        val result = service.insert(text, testBookId)
+        val result = service.create(text, testBookId)
 
         assertThat(result.id).isNotNull()
 
