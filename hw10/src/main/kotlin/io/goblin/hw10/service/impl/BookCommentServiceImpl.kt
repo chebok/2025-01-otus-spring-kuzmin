@@ -7,6 +7,8 @@ import io.goblin.hw10.model.BookComment
 import io.goblin.hw10.persistence.repository.BookCommentRepository
 import io.goblin.hw10.persistence.repository.BookRepository
 import io.goblin.hw10.service.BookCommentService
+import io.goblin.hw10.service.command.CreateBookCommentCommand
+import io.goblin.hw10.service.command.UpdateBookCommentCommand
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
@@ -29,20 +31,16 @@ class BookCommentServiceImpl(
     }
 
     @Transactional
-    override fun create(
-        text: String,
-        bookId: Long,
-    ): BookCommentDto {
+    override fun create(command: CreateBookCommentCommand): BookCommentDto {
+        val (text, bookId) = command
         val book = bookRepository.findById(bookId).orElseThrow { EntityNotFoundException("Book with id $bookId not found") }
         val bookComment = BookComment(text = text, bookId = book.id!!)
         return bookCommentRepository.save(bookComment).toDto()
     }
 
     @Transactional
-    override fun update(
-        id: Long,
-        text: String,
-    ): BookCommentDto {
+    override fun update(command: UpdateBookCommentCommand): BookCommentDto {
+        val (id, text) = command
         val bookComment = bookCommentRepository.findById(id).orElseThrow { EntityNotFoundException("Comment with id $id not found") }
         bookComment.apply {
             this.text = text

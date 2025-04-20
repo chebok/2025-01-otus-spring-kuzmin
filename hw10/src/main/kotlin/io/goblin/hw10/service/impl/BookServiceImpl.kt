@@ -1,8 +1,6 @@
 package io.goblin.hw10.service.impl
 
 import io.goblin.hw10.dto.BookDto
-import io.goblin.hw10.dto.CreateBookRequest
-import io.goblin.hw10.dto.UpdateBookRequest
 import io.goblin.hw10.exceptions.EntityNotFoundException
 import io.goblin.hw10.mapper.toDto
 import io.goblin.hw10.model.Book
@@ -10,6 +8,8 @@ import io.goblin.hw10.persistence.repository.AuthorRepository
 import io.goblin.hw10.persistence.repository.BookRepository
 import io.goblin.hw10.persistence.repository.GenreRepository
 import io.goblin.hw10.service.BookService
+import io.goblin.hw10.service.command.CreateBookCommand
+import io.goblin.hw10.service.command.UpdateBookCommand
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import kotlin.jvm.optionals.getOrNull
@@ -28,8 +28,8 @@ class BookServiceImpl(
     override fun findAll(): List<BookDto> = bookRepository.findAll().map { it.toDto() }
 
     @Transactional
-    override fun create(dto: CreateBookRequest): BookDto {
-        val(title, authorId, genresIds) = dto
+    override fun create(command: CreateBookCommand): BookDto {
+        val(title, authorId, genresIds) = command
         if (genresIds.isEmpty()) {
             throw IllegalArgumentException("Genres ids must not be empty")
         }
@@ -44,11 +44,8 @@ class BookServiceImpl(
     }
 
     @Transactional
-    override fun update(
-        id: Long,
-        dto: UpdateBookRequest,
-    ): BookDto {
-        val(title, authorId, genresIds) = dto
+    override fun update(command: UpdateBookCommand): BookDto {
+        val(id, title, authorId, genresIds) = command
         val book = bookRepository.findById(id).orElseThrow { EntityNotFoundException("Book with id $id not found") }
         if (genresIds.isEmpty()) {
             throw IllegalArgumentException("Genres ids must not be empty")

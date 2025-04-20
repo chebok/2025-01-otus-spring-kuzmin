@@ -84,7 +84,7 @@ class BookControllerTest {
 
     @Test
     fun updateBook() {
-        every { bookService.update(any(), any()) } returns book
+        every { bookService.update(any()) } returns book
         val response =
             mockMvc
                 .perform(

@@ -4,6 +4,8 @@ import io.goblin.hw10.dto.BookDto
 import io.goblin.hw10.dto.CreateBookRequest
 import io.goblin.hw10.dto.UpdateBookRequest
 import io.goblin.hw10.service.BookService
+import io.goblin.hw10.service.command.CreateBookCommand
+import io.goblin.hw10.service.command.UpdateBookCommand
 import jakarta.validation.Valid
 import org.springframework.web.bind.annotation.*
 
@@ -22,13 +24,28 @@ class BookController(
     @PostMapping("/books")
     fun createBook(
         @Valid @RequestBody bookRequest: CreateBookRequest,
-    ): BookDto = bookService.create(bookRequest)
+    ): BookDto =
+        bookService.create(
+            CreateBookCommand(
+                title = bookRequest.title,
+                authorId = bookRequest.authorId,
+                genreIds = bookRequest.genreIds,
+            ),
+        )
 
     @PutMapping("/books/{id}")
     fun updateBook(
         @PathVariable("id") id: Long,
         @Valid @RequestBody bookRequest: UpdateBookRequest,
-    ): BookDto = bookService.update(id, bookRequest)
+    ): BookDto =
+        bookService.update(
+            UpdateBookCommand(
+                id = id,
+                title = bookRequest.title,
+                authorId = bookRequest.authorId,
+                genreIds = bookRequest.genreIds,
+            ),
+        )
 
     @DeleteMapping("/books/{id}")
     fun deleteBook(

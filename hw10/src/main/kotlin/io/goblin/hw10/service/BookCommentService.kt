@@ -1,21 +1,17 @@
 package io.goblin.hw10.service
 
 import io.goblin.hw10.dto.BookCommentDto
+import io.goblin.hw10.service.command.CreateBookCommentCommand
+import io.goblin.hw10.service.command.UpdateBookCommentCommand
 
 interface BookCommentService {
     fun findById(id: Long): BookCommentDto
 
     fun findByBookId(bookId: Long): List<BookCommentDto>
 
-    fun create(
-        text: String,
-        bookId: Long,
-    ): BookCommentDto
+    fun create(command: CreateBookCommentCommand): BookCommentDto
 
-    fun update(
-        id: Long,
-        text: String,
-    ): BookCommentDto
+    fun update(command: UpdateBookCommentCommand): BookCommentDto
 
     fun deleteById(id: Long)
 }

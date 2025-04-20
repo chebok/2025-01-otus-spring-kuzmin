@@ -29,6 +29,8 @@ dependencies {
     implementation("org.flywaydb:flyway-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
 
+    implementation("io.github.oshai:kotlin-logging-jvm:5.1.0")
+
     testImplementation("io.mockk:mockk:1.13.7")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

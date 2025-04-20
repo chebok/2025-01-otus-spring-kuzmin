@@ -1,5 +1,6 @@
 package io.goblin.hw10.http.handler
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import io.goblin.hw10.exceptions.EntityNotFoundException
 import io.goblin.hw10.http.ErrorResponse
 import org.springframework.http.HttpStatus
@@ -8,6 +9,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.ResponseStatus
 import org.springframework.web.bind.annotation.RestControllerAdvice
+
+private val logger = KotlinLogging.logger {}
 
 @RestControllerAdvice
 class ExceptionHandlerAdvice {
@@ -38,7 +41,7 @@ class ExceptionHandlerAdvice {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception::class)
     fun handleUnexpectedException(e: Exception): ErrorResponse {
-        e.printStackTrace()
+        logger.error(e) { "Unexpected error" }
         return ErrorResponse(
             status = HttpStatus.INTERNAL_SERVER_ERROR.value(),
             errors = mapOf("message" to "Internal server error"),
