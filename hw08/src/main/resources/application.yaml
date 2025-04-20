@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: hw08
+    version: 1.0
+  data:
+    mongodb:
+      port: 0
+      database: library
+  shell:
+    interactive:
+      enabled: true
+    command:
+      version:
+        enabled: false
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 4.0.5
+
+mongock:
+  runner-type: "InitializingBean"
+  change-logs-scan-package:
+    - io.goblin.hw08.mongo.changelog
+  mongo-db:
+    write-concern:
+      journal: false
+    read-concern: local
+
