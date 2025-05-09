@@ -6,7 +6,7 @@ VALUES
 
 INSERT INTO genres(name)
 VALUES
-    ('Horror'),
+    ('Comedy, "Romantic"'),
     ('Science Fiction'),
     ('Detective'),
     ('Fantasy'),

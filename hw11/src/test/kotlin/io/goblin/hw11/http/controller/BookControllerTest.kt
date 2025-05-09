@@ -23,7 +23,7 @@ class BookControllerTest {
             CreateBookRequest(
                 title = "Kotlin in Action",
                 authorId = 1L,
-                genreIds = setOf(1L),
+                genreIds = setOf(1L, 2L, 3L),
             )
 
         val createdBook =
@@ -55,6 +55,11 @@ class BookControllerTest {
 
         assert(fetchedBook.id == createdBook.id) { "Fetched book ID mismatch" }
         assert(fetchedBook.title == "Kotlin in Action") { "Fetched book title mismatch" }
+        assert(fetchedBook.genres.size == 3) { "Expected 3 genres, got ${fetchedBook.genres.size}" }
+        val expectedGenre = "Comedy, \"Romantic\""
+        val hasExpectedGenre = fetchedBook.genres.any { it.name == expectedGenre }
+
+        assert(hasExpectedGenre) { "Expected genre '$expectedGenre' not found in ${fetchedBook.genres.map { it.name }}" }
 
         // Update the book
         val updateRequest =
@@ -91,6 +96,54 @@ class BookControllerTest {
         webTestClient
             .get()
             .uri("/books/${createdBook.id}")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+    }
+
+    @Test
+    fun `should return 404 when getting non-existing book`() {
+        val nonExistingId = Long.MAX_VALUE
+
+        webTestClient
+            .get()
+            .uri("/books/$nonExistingId")
+            .exchange()
+            .expectStatus()
+            .isNotFound
+    }
+
+    @Test
+    fun `should return 404 when creating book with non-existing author or genre`() {
+        val createRequest =
+            CreateBookRequest(
+                title = "Invalid Book",
+                authorId = Long.MAX_VALUE,
+                genreIds = setOf(Long.MAX_VALUE),
+            )
+
+        webTestClient
+            .post()
+            .uri("/books")
+            .bodyValue(createRequest)
+            .exchange()
+            .expectStatus()
+            .isNotFound
+    }
+
+    @Test
+    fun `should return 404 when updating non-existing book`() {
+        val updateRequest =
+            UpdateBookRequest(
+                title = "Invalid Update",
+                authorId = 1L,
+                genreIds = setOf(1L),
+            )
+
+        webTestClient
+            .put()
+            .uri("/books/999")
+            .bodyValue(updateRequest)
             .exchange()
             .expectStatus()
             .isNotFound

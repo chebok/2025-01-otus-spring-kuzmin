@@ -1,19 +1,96 @@
 package io.goblin.hw11.persistence.repository.impl
 
+import io.goblin.hw11.model.Book
 import io.goblin.hw11.model.BookWithDetails
 import io.goblin.hw11.persistence.repository.BookCustomRepository
+import io.goblin.hw11.persistence.request.InsertBookDbRequest
+import io.goblin.hw11.persistence.request.UpdateBookDbRequest
 import io.r2dbc.spi.Row
 import io.r2dbc.spi.RowMetadata
 import kotlinx.coroutines.flow.Flow
-import org.springframework.r2dbc.core.DatabaseClient
-import org.springframework.r2dbc.core.awaitOneOrNull
-import org.springframework.r2dbc.core.flow
+import org.springframework.r2dbc.core.*
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.reactive.TransactionalOperator
+import org.springframework.transaction.reactive.executeAndAwait
 
 @Repository
 class BookCustomRepositoryImpl(
     private val client: DatabaseClient,
+    private val txOperator: TransactionalOperator,
 ) : BookCustomRepository {
+    override suspend fun insertBookWithGenres(request: InsertBookDbRequest): Book {
+        val(title, authorId, genreIds) = request
+        return txOperator.executeAndAwait {
+            val bookId =
+                client
+                    .sql(
+                        """
+                    INSERT INTO books (title, author_id)
+                    VALUES (:title, :authorId)
+                    RETURNING id
+                    """,
+                    ).bind("title", title)
+                    .bind("authorId", authorId)
+                    .map { row -> row.get("id", java.lang.Long::class.java)!!.toLong() }
+                    .awaitSingle()
+
+            if (genreIds.isNotEmpty()) {
+                val bookIds = List(genreIds.size) { bookId }
+                client
+                    .sql(
+                        """
+                    INSERT INTO books_genres (book_id, genre_id)
+                    SELECT book_id, genre_id
+                    FROM UNNEST(:bookIds::bigint[], :genreIds::bigint[]) AS t(book_id, genre_id)
+                    """,
+                    ).bind("bookIds", bookIds.toTypedArray())
+                    .bind("genreIds", genreIds.toTypedArray())
+                    .await()
+            }
+
+            Book(id = bookId, title = title, authorId = authorId)
+        }
+    }
+
+    override suspend fun updateBookWithGenres(request: UpdateBookDbRequest) {
+        val (id, title, authorId, genreIds) = request
+        return txOperator.executeAndAwait {
+            client
+                .sql(
+                    """
+            UPDATE books
+            SET title = :title, author_id = :authorId
+            WHERE id = :id
+            """,
+                ).bind("id", id)
+                .bind("title", title)
+                .bind("authorId", authorId)
+                .await()
+
+            client
+                .sql(
+                    """
+            DELETE FROM books_genres WHERE book_id = :id
+            """,
+                ).bind("id", id)
+                .await()
+
+            if (genreIds.isNotEmpty()) {
+                val bookIds = List(genreIds.size) { id }
+                client
+                    .sql(
+                        """
+                INSERT INTO books_genres (book_id, genre_id)
+                SELECT book_id, genre_id
+                FROM UNNEST(:bookIds::bigint[], :genreIds::bigint[]) AS t(book_id, genre_id)
+                """,
+                    ).bind("bookIds", bookIds.toTypedArray())
+                    .bind("genreIds", genreIds.toTypedArray())
+                    .await()
+            }
+        }
+    }
+
     override suspend fun findDetailedById(id: Long): BookWithDetails? =
         client
             .sql(

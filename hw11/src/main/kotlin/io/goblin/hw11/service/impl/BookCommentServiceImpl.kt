@@ -21,12 +21,8 @@ class BookCommentServiceImpl(
         bookCommentRepository.findById(id)?.toDto()
             ?: throw EntityNotFoundException("Comment with id $id not found")
 
-    override suspend fun findByBookId(bookId: Long): List<BookCommentDto> {
-        val exists = bookRepository.existsById(bookId)
-        if (!exists) throw EntityNotFoundException("Book with id $bookId not found")
-
-        return bookCommentRepository.findByBookId(bookId).toList().map { it.toDto() }
-    }
+    override suspend fun findByBookId(bookId: Long): List<BookCommentDto> =
+        bookCommentRepository.findByBookId(bookId).toList().map { it.toDto() }
 
     override suspend fun create(command: CreateBookCommentCommand): BookCommentDto {
         val (text, bookId) = command
